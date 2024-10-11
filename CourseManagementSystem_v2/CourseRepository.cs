@@ -162,6 +162,36 @@ namespace CourseManagementSystem_v2
 
         }
 
+        public string CapitalizeTitle (string title)
+        {
+            if(string.IsNullOrEmpty(title))
+                return title;
+
+            var words = title.Split(' ');
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (words[i].Length > 0)
+                {
+                    words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
+                }
+            }
+            return string.Join(" ", words); 
+
+            
+        }
+
+
+
+
+        public bool ValidateCoursePrice(decimal price)
+        {
+            if (price <= 0)
+            {
+                Console.WriteLine("Price must be a Positive Value. Please Enter a Valid Price: ");
+                return false;
+            }
+            return true;
+        }
 
 
     }
