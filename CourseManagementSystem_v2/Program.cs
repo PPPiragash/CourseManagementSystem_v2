@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CourseManagementSystem_v2
 {
-     public class Program
+      class Program
      {
         static void Main(string[] args)
         {
