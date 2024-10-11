@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace CourseManagementSystem_v2
                                                 );
                                             ";
 
-               
+
 
                 conn.Open();
 
@@ -36,13 +37,132 @@ namespace CourseManagementSystem_v2
                     cmd.ExecuteNonQuery();
                 }
 
-                using (SqlCommand cmd = new SqlCommand(createTableQuery, conn))
+                using (SqlCommand cmd = new SqlCommand(createTableQuery,conn))
                 {
+                    cmd.ExecuteNonQuery ();
+                }
+
+
+            }
+        }
+
+
+        public void AddCourse(Course course)
+        {
+            using (SqlConnection conn = new SqlConnection(@"Server=(localdb)\MSSQLLocalDB;Database=CourseManagement;Trusted_Connection=True;"))
+            {
+                string query = "INSERT INTO Courses (CourseId,Title,Duration,Price) VALUES (@CourseId,@Title,@Duration,@Price)";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CourseId", course{CourseId});
+                    cmd.Parameters.AddWithValue("@Title", course{Title});
+                    cmd.Parameters.AddWithValue("@Duration", course{Duration});
+                    cmd.Parameters.AddWithValue("@Price", course{Price});
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+            }
+        }
+
+
+        public List<Course> GetAllCourses ()
+        {
+            List<Course> courses = new List<Course>();
+            using (SqlConnection conn = new SqlConnection(@"Server=(localdb)\MSSQLLocalDB;Database=CourseManagement;Trusted_Connection=True;"))
+            {
+                
+                string query = "Select * From Courses";
+                using(SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            courses.Add(new Course
+                            (
+                                reader.GetString(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetDecimal(3)
+                            );
+                        }
+                    }
+                }
+                return courses;
+            }
+        }
+
+
+
+        public void UpdateCourse (Course course)
+        {
+            using (SqlConnection conn = new SqlConnection(@"Server=(localdb)\MSSQLLocalDB;Database=CourseManagement;Trusted_Connection=True;"))
+            {
+                string query = "Update Courses Set Title=@Title,Duration=@Duration,Price=@Price Where CourseId=@CourseId";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CourseId", course{CourseId});
+                    cmd.Parameters.AddWithValue("@Title", course{Title});
+                    cmd.Parameters.AddWithValue("@Duration", course{Duration});
+                    cmd.Parameters.AddWithValue("@Price", course{Price});
+                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
 
 
             }
         }
+
+
+        public void DeleteCourse(string courseId)
+        {
+            using (SqlConnection conn = new SqlConnection(@"Server=(localdb)\MSSQLLocalDB;Database=CourseManagement;Trusted_Connection=True;"))
+            {
+                string query = "Delete From Courses Where CourseId = @CourseId";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CourseId", CourseId);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                }
+            }
+        }
+
+
+        public Course GetCourseById (string courseId)
+        {
+            using (SqlConnection conn = new SqlConnection(@"Server=(localdb)\MSSQLLocalDB;Database=CourseManagement;Trusted_Connection=True;"))
+            {
+                string query = "Select * from Courses where CourseId=@CourseId";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using(SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Course(
+                                reader.GetString(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetDecimal(3)
+                                );
+                        }
+                    }
+                }
+
+            }
+
+            return null;
+            
+
+        }
+
+
+
     }
 }
